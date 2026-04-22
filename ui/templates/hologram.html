@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Christin - OS Interface</title>
+    <style>
+        :root {
+            --glow: #00d4ff;
+            --dim-glow: rgba(0, 212, 255, 0.3);
+            --bg: #050a0f;
+        }
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            border: 2px solid var(--glow);
+            box-sizing: border-box;
+            position: relative;
+        }
+        .sidebar {
+            width: 300px;
+            border-right: 1px solid var(--dim-glow);
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+        }
+        .main-view {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .status-circle {
+            width: 400px;
+            height: 400px;
+            border: 2px solid var(--dim-glow);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: rotate 20s linear infinite;
+        }
+        .inner-circle {
+            width: 300px;
+            height: 300px;
+            border: 4px dashed var(--glow);
+            border-radius: 50%;
+            animation: rotate-rev 10s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes rotate-rev {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        .core {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--glow);
+            text-shadow: 0 0 15px var(--glow);
+        }
+        .stats {
+            position: absolute;
+            bottom: 40px;
+            left: 340px;
+            font-size: 0.8rem;
+            color: var(--dim-glow);
+        }
+        .glitch-text {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2 style="color: var(--glow)">System Status</h2>
+            <p>Ears: <span style="color: #0f0">Active</span></p>
+            <p>Displays: <span style="color: #0f0">Dual Detected</span></p>
+            <p>Owner: <span style="color: var(--glow)">Sir</span></p>
+            <hr style="border: 0; border-top: 1px solid var(--dim-glow)">
+            <div id="logs" style="font-size: 0.7rem; color: #aaa;">
+                > System Online<br>
+                > Waiting for voice input...
+            </div>
+        </div>
+        <div class="main-view">
+            <div class="status-circle"></div>
+            <div class="inner-circle"></div>
+            <div class="core glitch-text">CHRISTIN</div>
+        </div>
+        <div class="stats">
+            COORDINATES: 40.7128° N, 74.0060° W | UPTIME: 99.9% | SECURITY: LEVEL 5
+        </div>
+    </div>
+</body>
+</html>
