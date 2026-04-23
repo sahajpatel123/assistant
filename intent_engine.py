@@ -41,6 +41,8 @@ def extract_intent_llm(text):
     - system_volume (params: level[0-100])
     - analyze_screen (params: question)
     - ui_automation (params: action['type', 'click', 'press', 'find'], target, coordinates[x, y])
+    - knowledge_query (params: question)
+    - knowledge_ingest (params: file_path)
     - general_query (params: question)
 
     User command: "{text}"

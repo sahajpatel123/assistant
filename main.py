@@ -12,6 +12,7 @@ from vision_manager import verify_user, capture_and_analyze_screen
 from intent_engine import get_intent
 from briefing_manager import generate_morning_briefing
 from memory_manager import memory
+from knowledge_manager import knowledge
 import automation_manager
 
 # Configuration
@@ -107,20 +108,48 @@ def process_command(command_text):
         speak(status)
         response_text = status
 
+    elif intent == "knowledge_query":
+        question = params.get("question", command_text)
+        speak("Searching my neural knowledge base, Sir.")
+        context = knowledge.query_knowledge(question)
+        if context:
+            from intent_engine import model
+            prompt = f"Using the following context, answer the user's question: {question}\n\nCONTEXT:\n{context}"
+            try:
+                response = model.generate_content(prompt)
+                speak(response.text)
+                response_text = response.text
+            except:
+                speak("I found relevant data but failed to synthesize an answer, Sir.")
+        else:
+            speak("I could not find any relevant information in my long-term memory, Sir.")
+
+    elif intent == "knowledge_ingest":
+        path = params.get("file_path")
+        if not path:
+            speak("Sir, I require a file path to begin the indexing protocol.")
+        else:
+            status = knowledge.ingest_file(path)
+            speak(status)
+            response_text = status
+
     elif intent == "general_query":
-        speak(f"I am processing your request regarding '{command_text}', Sir.")
+        speak(f"Processing, Sir.")
+        # Check knowledge base first (RAG)
+        context = knowledge.query_knowledge(command_text)
         from intent_engine import model
         if model:
+            prompt = command_text
+            if context:
+                prompt = f"Using the following context if relevant, answer the question: {command_text}\n\nCONTEXT:\n{context}"
             try:
-                response = model.generate_content(command_text)
+                response = model.generate_content(prompt)
                 speak(response.text)
                 response_text = response.text
             except:
                 speak("I encountered an error while processing your inquiry, Sir.")
-                response_text = "Error in general query."
         else:
             speak("I am monitoring, Sir, but that command is not in my current library.")
-            response_text = "Command not in library."
 
     else:
         speak("I am monitoring, Sir, but that command is not in my current library.")

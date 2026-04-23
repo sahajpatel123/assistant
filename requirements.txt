@@ -13,3 +13,5 @@ google-api-python-client==2.121.0
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.0
 pyautogui==0.9.54
+chromadb==0.4.24
+pypdf==4.1.0
