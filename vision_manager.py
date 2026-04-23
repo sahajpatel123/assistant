@@ -1,4 +1,7 @@
 import cv2
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import face_recognition
 import os
 import subprocess
@@ -14,6 +17,7 @@ if GEMINI_API_KEY:
 else:
     vision_model = None
 
+
 def verify_user():
     """
     Captures a frame from the webcam and checks if it matches any known face in the 'faces' directory.
@@ -27,11 +31,12 @@ def verify_user():
         return False
 
     for filename in os.listdir(faces_dir):
-        if filename.endswith(".jpg") or filename.endswith(".png"):
+        if filename.endswith((".jpg", ".png")):
             path = os.path.join(faces_dir, filename)
             image = face_recognition.load_image_file(path)
             # Use multiple jitters/upsamples for a better encoding template
-            encodings = face_recognition.face_encodings(image, num_jitters=10, model="large")
+            encodings = face_recognition.face_encodings(
+                image, num_jitters=10, model="large")
             if encodings:
                 known_face_encodings.append(encodings[0])
                 known_face_names.append(os.path.splitext(filename)[0])
@@ -48,9 +53,10 @@ def verify_user():
     frames = []
     for _ in range(5):
         ret, f = video_capture.read()
-        if ret: frames.append(f)
+        if ret:
+            frames.append(f)
         time.sleep(0.1)
-    
+
     video_capture.release()
 
     if not frames:
@@ -60,12 +66,15 @@ def verify_user():
     # Process frames with higher upsampling for accuracy
     for frame in frames:
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        face_locations = face_recognition.face_locations(rgb_frame, number_of_times_to_upsample=2, model="cnn")
-        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations, model="large")
+        face_locations = face_recognition.face_locations(
+            rgb_frame, number_of_times_to_upsample=2, model="cnn")
+        face_encodings = face_recognition.face_encodings(
+            rgb_frame, face_locations, model="large")
 
         for face_encoding in face_encodings:
             # lower tolerance = stricter matching
-            matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.45)
+            matches = face_recognition.compare_faces(
+                known_face_encodings, face_encoding, tolerance=0.45)
             if True in matches:
                 first_match_index = matches.index(True)
                 name = known_face_names[first_match_index]
@@ -75,6 +84,7 @@ def verify_user():
     print("User not recognized. Saving intruder image.")
     cv2.imwrite("intruder.jpg", frames[-1])
     return False
+
 
 def capture_and_analyze_screen(prompt="What do you see on my screen?"):
     """
@@ -86,19 +96,22 @@ def capture_and_analyze_screen(prompt="What do you see on my screen?"):
     screen_path = "screen_capture.jpg"
     try:
         # Capture screen on MacOS silently
-        subprocess.run(["screencapture", "-x", "-t", "jpg", screen_path], check=True)
+        subprocess.run(["screencapture", "-x", "-t",
+                       "jpg", screen_path], check=True)
         img = Image.open(screen_path)
-        
+
         response = vision_model.generate_content([prompt, img])
-        
+
         # Clean up
         if os.path.exists(screen_path):
             os.remove(screen_path)
-            
-        return response.text.replace("*", "") # Clean up markdown asterisks for TTS
+
+        # Clean up markdown asterisks for TTS
+        return response.text.replace("*", "")
     except Exception as e:
         print(f"Vision error: {e}")
         return "I encountered an error trying to process the screen feed, Sir."
+
 
 if __name__ == "__main__":
     if verify_user():

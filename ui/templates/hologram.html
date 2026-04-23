@@ -145,8 +145,8 @@
             </div>
 
             <div id="logs" style="font-size: 0.7rem; color: #aaa; margin-top: 20px;">
-                > System Online<br>
-                > Waiting for voice input...
+                <div style="color: var(--glow); margin-bottom: 5px;" id="hud-cmd">> AWAITING INPUT</div>
+                <div id="hud-resp" style="line-height: 1.2;">System Ready.</div>
             </div>
         </div>
         <div class="main-view">
@@ -207,6 +207,12 @@
                 
                 document.getElementById('ram-val').innerText = data.ram + '%';
                 document.getElementById('ram-bar').style.width = data.ram + '%';
+
+                // Update HUD Status from Brain
+                if (data.status) {
+                    document.getElementById('hud-cmd').innerText = "> " + data.status.command.toUpperCase();
+                    document.getElementById('hud-resp').innerText = data.status.response;
+                }
             } catch (e) {
                 console.error("Telemetry error", e);
             }

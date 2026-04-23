@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import os
 import chromadb
 from chromadb.utils import embedding_functions
@@ -12,21 +15,20 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
+
 class KnowledgeManager:
     def __init__(self, db_path="christin_knowledge"):
         self.client = chromadb.PersistentClient(path=db_path)
-        
+
         # Using Gemini for high-quality embeddings if key is present
         if GEMINI_API_KEY:
             self.emb_fn = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-                api_key=GEMINI_API_KEY,
-                task_type="retrieval_document"
-            )
+                api_key=GEMINI_API_KEY, task_type="retrieval_document")
         else:
             self.emb_fn = embedding_functions.DefaultEmbeddingFunction()
-            
+
         self.collection = self.client.get_or_create_collection(
-            name="sir_intel", 
+            name="sir_intel",
             embedding_function=self.emb_fn
         )
 
@@ -50,8 +52,9 @@ class KnowledgeManager:
             return "File appears to be empty, Sir."
 
         # Split text into chunks for better retrieval
-        chunks = [text[i:i+2000] for i in range(0, len(text), 2000)]
-        ids = [f"{os.path.basename(file_path)}_{i}" for i in range(len(chunks))]
+        chunks = [text[i:i + 2000] for i in range(0, len(text), 2000)]
+        ids = [
+            f"{os.path.basename(file_path)}_{i}" for i in range(len(chunks))]
         metadatas = [{"source": file_path} for _ in range(len(chunks))]
 
         self.collection.add(
@@ -59,7 +62,8 @@ class KnowledgeManager:
             metadatas=metadatas,
             ids=ids
         )
-        return f"File '{os.path.basename(file_path)}' has been successfully indexed into your neural knowledge base, Sir."
+        return f"File '{
+            os.path.basename(file_path)}' has been successfully indexed into your neural knowledge base, Sir."
 
     def query_knowledge(self, query_text):
         """Queries the vector DB and returns relevant context."""
@@ -67,12 +71,13 @@ class KnowledgeManager:
             query_texts=[query_text],
             n_results=3
         )
-        
+
         if not results['documents'][0]:
             return None
-            
+
         context = "\n---\n".join(results['documents'][0])
         return context
+
 
 # Global Instance
 knowledge = KnowledgeManager()

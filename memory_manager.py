@@ -1,6 +1,7 @@
 import sqlite3
 import datetime
 
+
 class SynapticMemory:
     def __init__(self, db_path="christin_memory.db"):
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
@@ -36,7 +37,7 @@ class SynapticMemory:
         rows = self.cursor.fetchall()
         # Reverse to get chronological order
         rows.reverse()
-        
+
         context = ""
         for role, content in rows:
             context += f"{role.capitalize()}: {content}\n"
@@ -45,6 +46,7 @@ class SynapticMemory:
     def clear_memory(self):
         self.cursor.execute("DELETE FROM interactions")
         self.conn.commit()
+
 
 # Global instance
 memory = SynapticMemory()

@@ -1,4 +1,8 @@
+from intel_manager import get_weather, get_calendar_events
 import datetime
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -11,7 +15,6 @@ if GEMINI_API_KEY:
 else:
     model = None
 
-from intel_manager import get_weather, get_calendar_events
 
 def generate_morning_briefing():
     """
@@ -33,7 +36,7 @@ def generate_morning_briefing():
     It is {time_str} on {date_str}.
     Environmental Data: {weather_info}.
     Tactical Schedule: {calendar_info}.
-    
+
     Give a very brief, concise, and cool morning briefing. Keep it under 3 sentences. No markdown formatting, just plain text suitable for text-to-speech.
     """
 

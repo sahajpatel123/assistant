@@ -1,9 +1,10 @@
 import subprocess
 
+
 def move_window(app_name, x, y, width, height):
     """
     Uses AppleScript to precisely position an application window.
-    MacBook Screen is typically 0,0. 
+    MacBook Screen is typically 0,0.
     External Monitor is typically to the right or above.
     """
     script = f'''
@@ -20,6 +21,7 @@ def move_window(app_name, x, y, width, height):
     '''
     subprocess.run(["osascript", "-e", script])
 
+
 def setup_workspace():
     """
     Sir's specific configuration:
@@ -29,13 +31,14 @@ def setup_workspace():
     # 1. Launch/Activate Cursor on MacBook Screen
     subprocess.run(["open", "-a", "Cursor"])
     move_window("Cursor", 0, 0, 1400, 900)
-    
+
     # 2. Launch/Activate Browser for Claude on External Monitor
     # Pushing to the right display.
     subprocess.run(["open", "-a", "Google Chrome", "https://claude.ai"])
-    move_window("Google Chrome", 1800, 0, 1920, 1080) 
+    move_window("Google Chrome", 1800, 0, 1920, 1080)
 
-    return "Workspace initialized. Main array on left, auxiliary on right, Sir."
+    return "Okay, Sir, opened workspace."
+
 
 def go_dark():
     """
