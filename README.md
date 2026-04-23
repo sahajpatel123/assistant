@@ -66,4 +66,29 @@ python main.py
 Christin is designed with a **Tactical Midnight** theme. Her UI uses high-contrast Cyan-on-Black aesthetics with rotating Arc-Reactor patterns, optimized for a sleek developer setup.
 
 ---
+
+## 🚀 Advanced Protocols (New)
+
+### 👤 Facial Recognition Identity Verification
+Christin now supports biometric verification via your Mac's webcam.
+- **Setup**: Place a clear photo of yourself in the `faces/` directory (e.g., `faces/sir.jpg`).
+- **Function**: When you say "Christin", she will activate the webcam to verify your identity before responding.
+- **Toggle**: You can disable this by setting `REQUIRE_FACE = False` in `main.py`.
+
+### 🧠 Flexible Command Engine (LLM)
+Powered by Google Gemini (optional) or a robust local pattern matcher.
+- **Natural Language**: You no longer need to say strict commands. "Christin, can you put on some focus music?" or "Christin, set the mood to dark mode" will now work.
+- **API Key**: For full LLM capabilities, add `GEMINI_API_KEY=your_key` to a `.env` file.
+
+### 🏠 HomeKit & Shortcuts
+Control your room directly.
+- **Scenes**: "Christin, execute Go Dark scene" will trigger your HomeKit scenes.
+- **Shortcuts**: It also supports running macOS Shortcuts by name.
+
+### 🎵 Dual-Source Music Orchestration
+- **Apple Music**: Default orchestration for Sir.
+- **Spotify**: Full support for guest users or external repo users.
+- **Commands**: Play, Pause, Next, Volume control.
+
+---
 *Built as a personal masterpiece for Sir.*
