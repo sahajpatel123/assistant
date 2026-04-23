@@ -23,13 +23,12 @@ def globe():
 def remote():
     return render_template("remote.html")
 
+from intel_manager import get_real_news
+
 @app.route("/api/news")
 def get_news():
-    MOCK_NEWS = [
-        {"lat": 38.9072, "lng": -77.0369, "headline": "New Tech Policy Passed in Washington", "region": "North America"},
-        {"lat": 51.5074, "lng": -0.1278, "headline": "London Markets See Record Highs", "region": "Europe"}
-    ]
-    return jsonify(MOCK_NEWS)
+    topic = request.args.get("q")
+    return jsonify(get_real_news(topic))
 
 @app.route("/api/telemetry")
 def telemetry():

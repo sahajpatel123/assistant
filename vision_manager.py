@@ -30,7 +30,8 @@ def verify_user():
         if filename.endswith(".jpg") or filename.endswith(".png"):
             path = os.path.join(faces_dir, filename)
             image = face_recognition.load_image_file(path)
-            encodings = face_recognition.face_encodings(image)
+            # Use multiple jitters/upsamples for a better encoding template
+            encodings = face_recognition.face_encodings(image, num_jitters=10, model="large")
             if encodings:
                 known_face_encodings.append(encodings[0])
                 known_face_names.append(os.path.splitext(filename)[0])
@@ -43,26 +44,36 @@ def verify_user():
     import time
     time.sleep(1)
 
-    ret, frame = video_capture.read()
+    # Capture 5 frames and use the best one or average
+    frames = []
+    for _ in range(5):
+        ret, f = video_capture.read()
+        if ret: frames.append(f)
+        time.sleep(0.1)
+    
     video_capture.release()
 
-    if not ret:
+    if not frames:
         print("Could not access webcam.")
         return False
 
-    face_locations = face_recognition.face_locations(frame)
-    face_encodings = face_recognition.face_encodings(frame, face_locations)
+    # Process frames with higher upsampling for accuracy
+    for frame in frames:
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        face_locations = face_recognition.face_locations(rgb_frame, number_of_times_to_upsample=2, model="cnn")
+        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations, model="large")
 
-    for face_encoding in face_encodings:
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-        if True in matches:
-            first_match_index = matches.index(True)
-            name = known_face_names[first_match_index]
-            print(f"User verified: {name}")
-            return True
+        for face_encoding in face_encodings:
+            # lower tolerance = stricter matching
+            matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.45)
+            if True in matches:
+                first_match_index = matches.index(True)
+                name = known_face_names[first_match_index]
+                print(f"User verified with high accuracy: {name}")
+                return True
 
     print("User not recognized. Saving intruder image.")
-    cv2.imwrite("intruder.jpg", frame)
+    cv2.imwrite("intruder.jpg", frames[-1])
     return False
 
 def capture_and_analyze_screen(prompt="What do you see on my screen?"):
