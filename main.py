@@ -65,6 +65,12 @@ def process_command(command_text):
         status = set_volume(level)
         speak(status)
 
+    elif intent == "analyze_screen":
+        question = params.get("question", "What do you see on my screen?")
+        speak("Processing visual feed, Sir.")
+        response = capture_and_analyze_screen(question)
+        speak(response)
+
     elif intent == "general_query":
         # If we have an LLM, we could answer directly. 
         # For now, let's just use it as a catch-all.
@@ -84,6 +90,7 @@ def process_command(command_text):
         speak("I am monitoring, Sir, but that command is not in my current library.")
 
 def listen_loop():
+    global last_briefing_date
     recognizer = sr.Recognizer()
     mic = sr.Microphone()
 
@@ -106,12 +113,21 @@ def listen_loop():
                     if has_faces:
                         speak("Verifying identity, Sir.")
                         if not verify_user():
-                            speak("Unauthorized access detected. I cannot comply.")
+                            speak("Unauthorized access detected. Saving intruder image and locking system.")
+                            go_dark()
                             continue
                     else:
                         print("Facial recognition enabled but no known faces found in 'faces/' directory. Skipping verification.")
 
-                speak("I am here, Sir.")
+                # Morning Briefing Logic
+                today = datetime.date.today()
+                if last_briefing_date != today:
+                    briefing = generate_morning_briefing()
+                    speak(briefing)
+                    last_briefing_date = today
+                else:
+                    speak("I am here, Sir.")
+                    
                 with mic as source:
                     command_audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
                     command_text = recognizer.recognize_google(command_audio)

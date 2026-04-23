@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christin - Mobile Remote</title>
+    <style>
+        :root {
+            --glow: #00d4ff;
+            --bg: #050a0f;
+            --btn-bg: rgba(0, 212, 255, 0.1);
+        }
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: var(--glow);
+            text-shadow: 0 0 10px var(--glow);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        button {
+            background: var(--btn-bg);
+            color: var(--glow);
+            border: 1px solid var(--glow);
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        button:active {
+            background: var(--glow);
+            color: var(--bg);
+            transform: scale(0.95);
+        }
+        .full-width {
+            grid-column: span 2;
+        }
+        .status {
+            margin-top: 30px;
+            color: #0f0;
+            font-size: 0.8rem;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tactical HUD</h1>
+    
+    <div class="btn-grid">
+        <button onclick="sendCommand('setup workspace')">Workspace</button>
+        <button onclick="sendCommand('go dark')">Go Dark</button>
+        <button onclick="sendCommand('play music')">Play Music</button>
+        <button onclick="sendCommand('pause music')">Pause Music</button>
+        <button class="full-width" onclick="sendCommand('what is on my screen')">Analyze Screen</button>
+        <button class="full-width" onclick="sendCommand('system status')">System Pulse</button>
+    </div>
+
+    <div class="status" id="status-msg"></div>
+
+    <script>
+        async function sendCommand(cmd) {
+            const statusMsg = document.getElementById('status-msg');
+            statusMsg.innerText = `Dispatching: ${cmd}...`;
+            statusMsg.style.color = 'var(--glow)';
+            
+            try {
+                const response = await fetch('/api/command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd })
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    statusMsg.innerText = `Protocol Executed: ${cmd}`;
+                    statusMsg.style.color = '#0f0';
+                } else {
+                    statusMsg.innerText = `Error: ${result.message}`;
+                    statusMsg.style.color = '#f00';
+                }
+            } catch (err) {
+                statusMsg.innerText = `Connection Failed.`;
+                statusMsg.style.color = '#f00';
+            }
+            
+            setTimeout(() => { statusMsg.innerText = ''; }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -83,6 +83,9 @@ def extract_intent_local(text):
         level = int(match.group(1)) if match else 50
         return {"intent": "system_volume", "params": {"level": level}}
 
+    if any(k in text for k in ["screen", "see", "what is on my screen", "look at"]):
+        return {"intent": "analyze_screen", "params": {"question": text}}
+
     return {"intent": "general_query", "params": {"question": text}}
 
 def get_intent(text):
