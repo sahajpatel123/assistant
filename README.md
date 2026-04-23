@@ -91,4 +91,24 @@ Control your room directly.
 - **Commands**: Play, Pause, Next, Volume control.
 
 ---
+
+## 🌌 Level 3 Protocols: The Masterpiece (New)
+
+### 🧠 Synaptic Memory (Contextual Awareness)
+Christin now remembers your previous interactions using a local SQLite database (`christin_memory.db`).
+- **Contextual Understanding**: You can ask follow-up questions like *"Tell me more about that"* or *"What was the first thing I asked you today?"*
+- **Persistence**: Your conversation history survives system restarts, allowing for a long-term relationship with the assistant.
+
+### ⚛️ Ambient "Core" UI (Vocal Visualization)
+The Holographic HUD is now responsive to your physical presence.
+- **Mic Sync**: The inner "Arc Reactor" in the UI pulses and glows in real-time based on your voice frequency using the Web Audio API.
+- **Zero Latency**: Visualization happens entirely in the browser for an instant, "alive" feel.
+
+### 👻 Ghost in the Machine (UI Automation)
+Christin has gained the ability to physically interact with your OS.
+- **Keystrokes**: "Christin, type 'Hello World' in my editor" will deliver keystrokes directly to the active window.
+- **Navigation**: Supports clicking at coordinates and pressing system keys (Enter, Space, etc.) via `pyautogui`.
+- **Safety**: Includes a built-in failsafe (move mouse to top-left) to instantly abort any automated movement.
+
+---
 *Built as a personal masterpiece for Sir.*

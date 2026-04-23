@@ -14,6 +14,8 @@ if GEMINI_API_KEY:
 else:
     model = None
 
+from memory_manager import memory
+
 def extract_intent_llm(text):
     """
     Uses Gemini to extract intent and parameters from natural language.
@@ -21,8 +23,14 @@ def extract_intent_llm(text):
     if not model:
         return None
 
+    context = memory.get_recent_context(limit=5)
+
     prompt = f"""
     Analyze the following user command for a virtual assistant and return a JSON object with 'intent' and 'params'.
+    
+    RECENT CONTEXT:
+    {context}
+
     Possible intents: 
     - setup_workspace (params: none)
     - go_dark (params: none)
@@ -31,6 +39,8 @@ def extract_intent_llm(text):
     - play_music (params: player['Music', 'Spotify'], action['play', 'pause', 'next', 'previous'], playlist)
     - home_control (params: scene, device, state)
     - system_volume (params: level[0-100])
+    - analyze_screen (params: question)
+    - ui_automation (params: action['type', 'click', 'press', 'find'], target, coordinates[x, y])
     - general_query (params: question)
 
     User command: "{text}"

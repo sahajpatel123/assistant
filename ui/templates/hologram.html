@@ -56,6 +56,7 @@
             border: 4px dashed var(--glow);
             border-radius: 50%;
             animation: rotate-rev 10s linear infinite;
+            transition: box-shadow 0.1s ease, transform 0.1s ease;
         }
         @keyframes rotate {
             from { transform: rotate(0deg); }
@@ -162,6 +163,41 @@
     </div>
 
     <script>
+        // Web Audio API for Vocal Visualization
+        async function startVocalVisualization() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                const innerCircle = document.querySelector('.inner-circle');
+
+                function update() {
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                    }
+                    const average = sum / bufferLength;
+                    const scale = 1 + (average / 128); // Dynamic scale
+                    const glow = average / 2; // Dynamic shadow
+                    
+                    innerCircle.style.transform = `scale(${scale})`;
+                    innerCircle.style.boxShadow = `0 0 ${glow}px var(--glow)`;
+                    
+                    requestAnimationFrame(update);
+                }
+                update();
+            } catch (err) {
+                console.log("Microphone access denied or not available for visualization.");
+            }
+        }
+
         async function fetchTelemetry() {
             try {
                 const response = await fetch('/api/telemetry');
@@ -192,6 +228,7 @@
         setInterval(fetchTelemetry, 2000);
         fetchNews();
         setInterval(fetchNews, 60000);
+        startVocalVisualization();
     </script>
 </body>
 </html>
