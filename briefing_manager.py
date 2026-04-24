@@ -39,7 +39,7 @@ def generate_morning_briefing():
 
     try:
         completion = grok_client.chat.completions.create(
-            model="grok-beta",
+            model="grok-3",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},

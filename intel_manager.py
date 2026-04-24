@@ -61,15 +61,18 @@ def get_weather():
         g = geocoder.ip('me')
         city = g.city or "New York"
 
-        # Professional approach: Use the Google-powered Gemini model
+        # Professional approach: Use the Google-powered Gemini model 
         # to fetch and synthesize the most accurate weather report for the city.
         # This acts as a 'Google Weather' bridge.
-        from intent_engine import model
-        if model:
+        from intent_engine import grok_client
+        if grok_client:
             prompt = f"Give me a very brief, 1-sentence current weather report for {city}. Just the temperature and conditions."
-            response = model.generate_content(prompt)
-            return f"{response.text.strip()} in {city}, Sir."
-
+            completion = grok_client.chat.completions.create(
+                model="grok-3",
+                messages=[{"role": "user", "content": prompt}],
+            )
+            report = completion.choices[0].message.content
+            return f"{report.strip()} in {city}, Sir."
         return f"Environmental sensors indicate clear conditions in {city}."
     except Exception as e:
         print(f"Weather Error: {e}")

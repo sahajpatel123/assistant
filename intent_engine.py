@@ -56,17 +56,16 @@ def extract_intent_llm(text):
     
     try:
         completion = client.chat.completions.create(
-            model="grok-beta",
+            model="grok-3",
             messages=[
-                {"role": "system", "content": "You are a professional intent extraction engine for Christin, an AI OS assistant."},
+                {"role": "system", "content": "You are a professional intent extraction engine for Christin, an AI OS assistant. Return ONLY raw valid JSON."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0,
+            response_format={ "type": "json_object" }
         )
         response_text = completion.choices[0].message.content
-        match = re.search(r'\{.*\}', response_text, re.DOTALL)
-        if match:
-            return json.loads(match.group())
+        return json.loads(response_text)
     except Exception as e:
         print(f"Grok Intent Error: {e}")
     return None

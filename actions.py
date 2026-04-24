@@ -4,11 +4,14 @@ import urllib.parse
 
 def speak(text, voice="Samantha"):
     """
-    Uses MacOS native 'say' command for zero-latency, offline text-to-speech.
-    'Samantha' is a clean, standard US Siri-like voice.
+    Uses MacOS native 'say' command.
+    'Samantha' provides a calm, standard female tone.
     """
-    print(f"Christin: {text}")
-    subprocess.run(["say", "-v", voice, text])
+    # Clean text of markdown characters
+    clean_text = text.replace("*", "").replace("#", "")
+    print(f"Christin: {clean_text}")
+    subprocess.run(["say", "-v", voice, clean_text])
+    return clean_text
 
 
 def make_call(phone_number):

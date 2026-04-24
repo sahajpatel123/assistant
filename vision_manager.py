@@ -13,7 +13,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-    vision_model = genai.GenerativeModel('gemini-1.5-flash')
+    vision_model = genai.GenerativeModel("gemini-2.0-flash")
 else:
     vision_model = None
 
@@ -108,6 +108,8 @@ def capture_and_analyze_screen(prompt="What do you see on my screen?"):
 
         # Clean up markdown asterisks for TTS
         return response.text.replace("*", "")
+    except subprocess.CalledProcessError:
+        return "I am unable to access your screen, Sir. Please grant your Terminal 'Screen Recording' permissions in System Settings."
     except Exception as e:
         print(f"Vision error: {e}")
         return "I encountered an error trying to process the screen feed, Sir."

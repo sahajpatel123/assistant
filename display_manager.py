@@ -19,7 +19,10 @@ def move_window(app_name, x, y, width, height):
         set bounds of window 1 of process "{app_name}" to b
     end tell
     '''
-    subprocess.run(["osascript", "-e", script])
+    try:
+        subprocess.run(["osascript", "-e", script], check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Warning: Could not move window. Please grant Terminal 'Accessibility' permissions in System Settings -> Privacy & Security. Error: {e.stderr.decode('utf-8').strip()}")
 
 
 def setup_workspace():
@@ -29,13 +32,20 @@ def setup_workspace():
     - External Monitor is on the RIGHT (starts at 1728 or 1920)
     """
     # 1. Launch/Activate Cursor on MacBook Screen
-    subprocess.run(["open", "-a", "Cursor"])
-    move_window("Cursor", 0, 0, 1400, 900)
+    try:
+        subprocess.run(["open", "-a", "Cursor"], check=True, capture_output=True)
+        move_window("Cursor", 0, 0, 1400, 900)
+    except:
+        print("Warning: Cursor application not found.")
 
     # 2. Launch/Activate Browser for Claude on External Monitor
     # Pushing to the right display.
-    subprocess.run(["open", "-a", "Google Chrome", "https://claude.ai"])
-    move_window("Google Chrome", 1800, 0, 1920, 1080)
+    try:
+        subprocess.run(["open", "-a", "Google Chrome", "https://claude.ai"], check=True, capture_output=True)
+        move_window("Google Chrome", 1800, 0, 1920, 1080)
+    except:
+        print("Warning: Google Chrome not found. Falling back to default browser.")
+        subprocess.run(["open", "https://claude.ai"])
 
     return "Okay, Sir, opened workspace."
 
