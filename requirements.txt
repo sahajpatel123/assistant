@@ -15,3 +15,4 @@ google-auth-oauthlib>=1.2.0
 pyautogui>=0.9.54
 chromadb>=0.4.24
 pypdf>=4.1.0
+openai>=1.12.0

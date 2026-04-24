@@ -156,14 +156,21 @@ def process_command(command_text):
         speak("Searching my neural knowledge base, Sir.")
         context = knowledge.query_knowledge(question)
         if context:
-            from intent_engine import model
+            from intent_engine import grok_client
             prompt = f"Using the following context, answer the user's question: {question}\n\nCONTEXT:\n{context}"
             try:
-                response = model.generate_content(prompt)
-                response_text = response.text
+                completion = grok_client.chat.completions.create(
+                    model="grok-beta",
+                    messages=[
+                        {"role": "system", "content": "You are Christin, a highly advanced AI assistant. Answer using the provided context."},
+                        {"role": "user", "content": prompt},
+                    ],
+                )
+                response_text = completion.choices[0].message.content
                 push_ui_update(command_text, response_text)
-                speak(response.text)
-            except BaseException:
+                speak(response_text)
+            except Exception as e:
+                print(f"Grok Knowledge Error: {e}")
                 response_text = "Analysis synthesis failed."
                 push_ui_update(command_text, response_text)
                 speak("I found relevant data but failed to synthesize an answer, Sir.")
@@ -188,17 +195,24 @@ def process_command(command_text):
         speak("Processing, Sir.")
         # Check knowledge base first (RAG)
         context = knowledge.query_knowledge(command_text)
-        from intent_engine import model
-        if model:
+        from intent_engine import grok_client
+        if grok_client:
             prompt = command_text
             if context:
                 prompt = f"Using the following context if relevant, answer the question: {command_text}\n\nCONTEXT:\n{context}"
             try:
-                response = model.generate_content(prompt)
-                response_text = response.text
+                completion = grok_client.chat.completions.create(
+                    model="grok-beta",
+                    messages=[
+                        {"role": "system", "content": "You are Christin, a highly advanced AI assistant built for Sir."},
+                        {"role": "user", "content": prompt},
+                    ],
+                )
+                response_text = completion.choices[0].message.content
                 push_ui_update(command_text, response_text)
-                speak(response.text)
-            except BaseException:
+                speak(response_text)
+            except Exception as e:
+                print(f"Grok General Query Error: {e}")
                 response_text = "Brain error."
                 push_ui_update(command_text, response_text)
                 speak("I encountered an error while processing your inquiry, Sir.")
